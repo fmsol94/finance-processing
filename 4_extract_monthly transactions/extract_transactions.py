@@ -95,6 +95,7 @@ if __name__ == "__main__":
         accounts={
             "apple": Account(project_path / "Accounts/Apple-5843"),
             "audi": Account(project_path / "Accounts/Audi"),
+            "chase-2425": Account(project_path / "Accounts/Chase-2425"),
         },
         project_path=project_path,
     )

@@ -1,6 +1,7 @@
 import hashlib
 import json
 import logging
+import os
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
@@ -239,3 +240,39 @@ def _canonical_name(row, account_number=""):
 def _deterministic_id(row, account_number="", length=16):
     name = _canonical_name(row, account_number)
     return hashlib.sha256(name.encode("utf-8")).hexdigest()[:length]
+
+
+def load_metadata_from_json(filename):
+    """
+    Load a dictionary from a JSON file.
+
+    Args:
+        filename (str): The name of the JSON file to be loaded.
+
+    Returns:
+        dict: The loaded dictionary.
+    """
+    if not os.path.exists(filename):
+        raise FileNotFoundError(
+            f"The JSON metadata associated with this statement '{filename}' does not exist."
+        )
+
+    with open(filename, "r", encoding="utf-8") as json_file:
+        data = json.load(json_file)
+
+    decimal_keys = {
+        "Beginning balance",
+        "Ending balance",
+        "payments_and_credits",
+        "purchases",
+        "fees_charged",
+    }
+    date_keys = {"date", "beginning_date", "ending_date"}
+    # Convert specific keys to their respective types
+    for key, value in data.items():
+        if key in decimal_keys:
+            data[key] = Decimal(value)
+        elif key in date_keys:
+            data[key] = datetime.strptime(value, "%m-%d-%Y")
+
+    return data
