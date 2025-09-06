@@ -479,8 +479,6 @@ class Account:
             balance (Decimal): The total balance for the given date.
         """
         date_obj = datetime(year=year, month=month, day=day)
-        print(date_obj)
-        print(self.max_date)
         balance, warnings = get_col_val(
             df=self.data,
             col="Balance",
