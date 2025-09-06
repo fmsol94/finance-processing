@@ -543,7 +543,8 @@ def process_apple(apple_folder: str):
     unprocessed_files = {str(file) for file in files} - set(
         statements_db["raw_documents_path"]
     )
-    unprocessed_files = files
+    unprocessed_files = [Path(file) for file in unprocessed_files]
+    # unprocessed_files = files
     logging.info(f"{len(unprocessed_files)} unprocessed PDF files.")
     new_statements = []
     for file in tqdm(unprocessed_files, desc="Processing PDFs", unit="file"):
@@ -571,5 +572,6 @@ def process_apple(apple_folder: str):
 
 
 if __name__ == "__main__":
+    # Instructions, just drop pdf statement in correspondent folder
     setup_logging()
     process_apple("/home/francisco/Documents/Finances/Statements/Accounts/Apple-5843")
