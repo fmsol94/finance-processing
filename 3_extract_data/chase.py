@@ -27,4 +27,4 @@ df = load_chase_csv(csv_path, acct)
 process_data(df, month, str(year), project_path, acct=acct, csv_path=csv_path)
 
 # IF STATEMENT IS NOT AVAILABLE:
-statement_not_available(2025, 7, "4106", project_path, csv_path)
+statement_not_available(2025, 6, "4106", project_path, csv_path)

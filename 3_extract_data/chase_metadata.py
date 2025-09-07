@@ -340,6 +340,21 @@ def statement_not_available(year, month, acct_n, project_path, csv_path):
         metadata["Ending balance"] = data.iloc[-1]["Balance"]
     save_dict_as_json(data=metadata, filepath=save_filepath / "metadata.json")
 
+    # Create statement placeholder
+    data = {
+        "account": acct,
+        "year": metadata["date"].year,
+        "month": metadata["date"].month,
+        "note": "No statement available for this month.",
+    }
+    statement_path = Path(str(save_filepath).replace("Processed Data", "Statements"))
+    os.makedirs(statement_path, exist_ok=True)
+    save_dict_as_json(
+        data=data,
+        filepath=statement_path
+        / f"statement-{acct}-{data['year']}-{data['month']:02d}.placeholder.json",
+    )
+
 
 if __name__ == "__main__":
     project_path = Path("/home/francisco/Documents/Finances/Statements/Accounts")

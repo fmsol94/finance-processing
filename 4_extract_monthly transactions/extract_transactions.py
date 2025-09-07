@@ -98,6 +98,10 @@ if __name__ == "__main__":
             "chase-2425": Account(project_path / "Accounts/Chase-2425"),
             "chase-8021": Account(project_path / "Accounts/Chase-8021"),
             "chase-4106": Account(project_path / "Accounts/Chase-4106"),
+            "chase-0402": Account(project_path / "Accounts/Chase-0402"),
+            "chase-1010": Account(project_path / "Accounts/Chase-1010"),
+            "chase-1600": Account(project_path / "Accounts/Chase-1600"),
+            "chase-7593": Account(project_path / "Accounts/Chase-7593"),
         },
         project_path=project_path,
     )
