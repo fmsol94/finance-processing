@@ -102,6 +102,8 @@ if __name__ == "__main__":
             "chase-1010": Account(project_path / "Accounts/Chase-1010"),
             "chase-1600": Account(project_path / "Accounts/Chase-1600"),
             "chase-7593": Account(project_path / "Accounts/Chase-7593"),
+            "sofi-8365": Account(project_path / "Accounts/SoFi-8365"),
+            "sofi-9806": Account(project_path / "Accounts/SoFi-9806"),
         },
         project_path=project_path,
     )

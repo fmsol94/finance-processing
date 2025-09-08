@@ -276,3 +276,13 @@ def load_metadata_from_json(filename):
             data[key] = datetime.strptime(value, "%m-%d-%Y")
 
     return data
+
+
+def calculate_datetime_middle_point(dt1, dt2):
+    if dt1 > dt2:
+        dt1, dt2 = dt2, dt1  # Ensure dt1 is the earlier datetime
+
+    time_difference = dt2 - dt1
+    middle_point = dt1 + time_difference / 2
+
+    return middle_point

@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 from chase_csv import load_chase_csv, process_no_statement_data
 from commons import (
+    calculate_datetime_middle_point,
     convert_to_decimal,
     find_pdfs,
     load_metadata_from_json,
@@ -71,16 +72,6 @@ def extract_dollar_amount(s):
     else:
         raise ValueError(f"Dollar amount was not detected in input string '{s}'")
     return output
-
-
-def calculate_datetime_middle_point(dt1, dt2):
-    if dt1 > dt2:
-        dt1, dt2 = dt2, dt1  # Ensure dt1 is the earlier datetime
-
-    time_difference = dt2 - dt1
-    middle_point = dt1 + time_difference / 2
-
-    return middle_point
 
 
 def extract_chase_checking_metadata(lines):
