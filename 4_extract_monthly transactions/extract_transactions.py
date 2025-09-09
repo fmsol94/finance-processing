@@ -91,7 +91,7 @@ def extract_transactions(report_date, accounts, project_path):
 if __name__ == "__main__":
     project_path = Path("/home/francisco/Documents/Finances/Statements")
     extract_transactions(
-        report_date="5-2025",
+        report_date="4-2025",
         accounts={
             "apple": Account(project_path / "Accounts/Apple-5843"),
             "audi": Account(project_path / "Accounts/Audi"),
@@ -104,6 +104,9 @@ if __name__ == "__main__":
             "chase-7593": Account(project_path / "Accounts/Chase-7593"),
             "sofi-8365": Account(project_path / "Accounts/SoFi-8365"),
             "sofi-9806": Account(project_path / "Accounts/SoFi-9806"),
+            "pnc-6552": Account(project_path / "Accounts/PNC-6552"),
+            "pnc-6579": Account(project_path / "Accounts/PNC-6579"),
+            "pnc-6587": Account(project_path / "Accounts/PNC-6587"),
         },
         project_path=project_path,
     )

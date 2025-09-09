@@ -281,8 +281,8 @@ def process_sofi(statements_folder):
     unprocessed_files = {str(file) for file in files} - set(
         statements_db["raw_documents_path"]
     )
-    # unprocessed_files = [Path(file) for file in unprocessed_files]
-    unprocessed_files = files
+    unprocessed_files = [Path(file) for file in unprocessed_files]
+    # unprocessed_files = files
     logging.info(f"{len(unprocessed_files)} unprocessed PDF files.")
     new_statements = []
     for file in tqdm(unprocessed_files, desc="Processing PDFs", unit="file"):
