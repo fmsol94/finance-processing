@@ -1,9 +1,11 @@
+import os
 from datetime import datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 
 import pandas as pd
 from account import Account
+from tqdm import tqdm
 
 
 def get_report_folder(report_date: str, project_path) -> Path:
@@ -55,7 +57,9 @@ def extract_transactions(report_date, accounts, project_path):
         if acct.max_date < end_date + timedelta(days=2):
             raise ValueError(f"{acct} does not extend enough past {end_date}")
 
-        if acct.min_date > start_date - timedelta(days=2):
+        if start_date > acct.open_date and acct.min_date > start_date - timedelta(
+            days=2
+        ):
             raise ValueError(f"{acct} does not start early enough before {start_date}")
 
         # Get transactions
@@ -90,23 +94,39 @@ def extract_transactions(report_date, accounts, project_path):
 
 if __name__ == "__main__":
     project_path = Path("/home/francisco/Documents/Finances/Statements")
-    extract_transactions(
-        report_date="4-2025",
-        accounts={
-            "apple": Account(project_path / "Accounts/Apple-5843"),
-            "audi": Account(project_path / "Accounts/Audi"),
-            "chase-2425": Account(project_path / "Accounts/Chase-2425"),
-            "chase-8021": Account(project_path / "Accounts/Chase-8021"),
-            "chase-4106": Account(project_path / "Accounts/Chase-4106"),
-            "chase-0402": Account(project_path / "Accounts/Chase-0402"),
-            "chase-1010": Account(project_path / "Accounts/Chase-1010"),
-            "chase-1600": Account(project_path / "Accounts/Chase-1600"),
-            "chase-7593": Account(project_path / "Accounts/Chase-7593"),
-            "sofi-8365": Account(project_path / "Accounts/SoFi-8365"),
-            "sofi-9806": Account(project_path / "Accounts/SoFi-9806"),
-            "pnc-6552": Account(project_path / "Accounts/PNC-6552"),
-            "pnc-6579": Account(project_path / "Accounts/PNC-6579"),
-            "pnc-6587": Account(project_path / "Accounts/PNC-6587"),
-        },
-        project_path=project_path,
+    # accounts = os.listdir(project_path / "Accounts")
+    accounts = [
+        "Apple-5843",
+        "Audi",
+        "Chase-0402",
+        "Chase-1010",
+        "Chase-1600",
+        "Chase-2425",
+        "Chase-4106",
+        "Chase-7593",
+        "Chase-8021",
+        "Discover-8384",
+        "PNC-6552",
+        "PNC-6579",
+        "PNC-6587",
+        "SoFi-8365",
+        "SoFi-9806",
+    ]
+    for m in tqdm(range(4, 6)):
+        extract_transactions(
+            report_date=f"{m}-2025",
+            accounts={
+                acct: Account(project_path / f"Accounts/{acct}") for acct in accounts
+            },
+            project_path=project_path,
+        )
+
+    df = pd.read_csv(
+        "/home/francisco/Documents/Finances/Statements/Monthly Reports/2025/05/transactions.csv"
     )
+    df_accounts = set(df["Account"])
+    expected_accounts = set(accounts)
+    missing_accounts = expected_accounts - df_accounts
+
+    if missing_accounts:
+        raise ValueError(f"Missing accounts: {', '.join(map(str, missing_accounts))}")

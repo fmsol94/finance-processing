@@ -2,7 +2,7 @@ import hashlib
 import json
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 from typing import List
@@ -286,3 +286,24 @@ def calculate_datetime_middle_point(dt1, dt2):
     middle_point = dt1 + time_difference / 2
 
     return middle_point
+
+
+def first_day_of_month(datetime_obj):
+    # Calculate the first day of the current month
+    first_day = datetime_obj.replace(day=1)
+    return first_day
+
+
+def last_day_of_month(datetime_obj):
+    # Calculate the first day of the next month
+    if datetime_obj.month == 12:
+        first_day_next_month = datetime_obj.replace(
+            year=datetime_obj.year + 1, month=1, day=1
+        )
+    else:
+        first_day_next_month = datetime_obj.replace(month=datetime_obj.month + 1, day=1)
+
+    # Subtract one day from the first day of the next month to get the last day of the current month
+    last_day = first_day_next_month - timedelta(days=1)
+
+    return last_day
