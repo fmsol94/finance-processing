@@ -2,7 +2,7 @@ import hashlib
 import json
 import logging
 import os
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 from typing import List
@@ -307,3 +307,10 @@ def last_day_of_month(datetime_obj):
     last_day = first_day_next_month - timedelta(days=1)
 
     return last_day
+
+
+def previous_year_month(year: int, month: int) -> tuple[int, int]:
+    """Return the year and month before the given year/month."""
+    first_day = date(year, month, 1)
+    prev_month_last_day = first_day - timedelta(days=1)
+    return prev_month_last_day.year, prev_month_last_day.month

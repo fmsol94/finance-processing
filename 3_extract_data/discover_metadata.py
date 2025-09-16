@@ -340,22 +340,6 @@ def extract_acct_number(lines):
     return acct_number
 
 
-def discover_metadata_extract_from_pdf(data):
-    lines = [line.lower().replace(" ", "") for line in data[0].splitlines()]
-    acct_number = extract_acct_number(lines)
-    if acct_number == "4589":
-        metadata = extract_discover_credit_card_metadata(lines)
-        metadata["Account number"] = "4589"
-    elif acct_number == "8384":
-        metadata = extract_discover_bank_metadata(lines)
-        metadata["Account number"] = "8384"
-    elif acct_number is None:
-        raise ValueError("No account number was extracted from this file.")
-    else:
-        raise ValueError(f"Extracted account number {acct_number} is not supported.")
-    return metadata
-
-
 def extract_transaction_details(input_string):
     # Regular expression pattern with capturing groups
     pattern = r"^([A-Z][a-z]{2} \d{1,2}) ([A-Z][a-z]{2} \d{1,2})(.*?)(\$?\s*\d{1,3}(?:,\d{3})*\.\d{2})?$"
@@ -492,7 +476,14 @@ def discover_metadata_extract_from_pdf(data):
     return metadata
 
 
-def process_8384(filepath, save_filepath):
+def process_8384(filepath):
+    path = filepath.parent
+
+    before, _ = str(path).rsplit("Statements", 1)
+    save_filepath = Path(before + "Processed Data")
+
+    logging.info(f"Processing file {filepath} -> {save_filepath}")
+
     data = open_pdf(pdf_path=filepath)
     metadata = discover_metadata_extract_from_pdf(data)
     data, metadata = discover_savings_data_extract_from_pdf(data, metadata)
@@ -507,6 +498,7 @@ def process_8384(filepath, save_filepath):
         acct_name = f"Discover-{metadata_['Account number']}"
         year = metadata_["date"].year
         month = metadata_["date"].month
+        metadata_["source"] = str(filepath)
         actual_savepath = save_filepath / str(year) / f"{month:02d}"
         processed_statements.append(
             {
@@ -531,9 +523,36 @@ def process_8384(filepath, save_filepath):
     return processed_statements
 
 
+def process_4589(filepath):
+    path = filepath.parent
+
+    before, after = str(path).rsplit("Statements", 1)
+    save_filepath = Path(before + "Processed Data" + after)
+
+    data = open_pdf(pdf_path=filepath)
+    metadata = discover_metadata_extract_from_pdf(data)
+    metadata["source"] = str(filepath)
+
+    processed_statements = [
+        {
+            "account_number": metadata["Account number"],
+            "month": metadata["date"].month,
+            "year": metadata["date"].year,
+            "raw_documents_path": filepath,
+            "processed_documents_path": save_filepath,
+        }
+    ]
+
+    os.makedirs(save_filepath, exist_ok=True)
+    save_dict_as_json(data=metadata, filepath=save_filepath / "metadata.json")
+    return processed_statements
+
+
 def process_discover(project_path, acct_number):
     if acct_number == "8384":
         process_discover_statement = process_8384
+    elif acct_number == "4589":
+        process_discover_statement = process_4589
     else:
         raise ValueError(f"{acct_number} not valid account!")
 
@@ -554,14 +573,7 @@ def process_discover(project_path, acct_number):
     logging.info(f"{len(unprocessed_files)} unprocessed PDF files.")
     new_statements = []
     for file in tqdm(unprocessed_files, desc="Processing PDFs", unit="file"):
-        filepath = file
-        path = file.parent
-
-        before, _ = str(path).rsplit("Statements", 1)
-        save_filepath = Path(before + "Processed Data")
-
-        logging.info(f"Processing file {filepath} -> {save_filepath}")
-        processed_statements = process_discover_statement(filepath, save_filepath)
+        processed_statements = process_discover_statement(filepath=file)
         new_statements += processed_statements
     statements_db = pd.concat(
         [statements_db, pd.DataFrame(new_statements)], ignore_index=True
@@ -577,3 +589,4 @@ if __name__ == "__main__":
     project_path = Path("/home/francisco/Documents/Finances/Statements/Accounts")
     setup_logging()
     process_discover(project_path, "8384")
+    process_discover(project_path, "4589")

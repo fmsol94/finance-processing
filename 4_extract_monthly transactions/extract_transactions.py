@@ -106,6 +106,7 @@ if __name__ == "__main__":
         "Chase-7593",
         "Chase-8021",
         "Discover-8384",
+        "Discover-4589",
         "PNC-6552",
         "PNC-6579",
         "PNC-6587",

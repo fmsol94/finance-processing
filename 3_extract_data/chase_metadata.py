@@ -1,7 +1,7 @@
 import logging
 import os
 import re
-from datetime import date, datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
@@ -13,6 +13,7 @@ from commons import (
     load_metadata_from_json,
     load_statements_db,
     open_pdf,
+    previous_year_month,
     save_dict_as_json,
     setup_logging,
 )
@@ -275,13 +276,6 @@ def process_chase(project_path, acct_number):
         Path(chase_folder) / "statements_db.csv", index=False
     )
     logging.info(f"Finished processing all {acct_number} statements.")
-
-
-def previous_year_month(year: int, month: int) -> tuple[int, int]:
-    """Return the year and month before the given year/month."""
-    first_day = date(year, month, 1)
-    prev_month_last_day = first_day - timedelta(days=1)
-    return prev_month_last_day.year, prev_month_last_day.month
 
 
 def statement_not_available(year, month, acct_n, project_path, csv_path):
